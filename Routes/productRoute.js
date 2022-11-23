@@ -3,10 +3,15 @@ const Product = require('../Models/product')
 
 const router = new express.Router()
 
-
+//Posting of Products
 
 router.post('/postProduct', async (req, res) => {
-    const product = new Product(req.body)
+    const product = new Product(req.body
+       /* Name: req.body.Name,
+        productId: req.body.productId,
+        description: req.body.description*/
+    )
+  
     try {
         await product.save()
        
@@ -14,14 +19,18 @@ router.post('/postProduct', async (req, res) => {
             registeredproduct:product
             })
     } catch (error) {
+        console.log(error)
         res.status(401).json(error)
     }
     });
 
+//Getting all the Products
 
     router.get('/AllProducts', async(req, res) => {
         try {
-            const product = await Product.find({})
+            const product = await Product.find()
+
+            
             res.status(200).json({
                 TotalProducts:product.length,product
             })
@@ -30,10 +39,44 @@ router.post('/postProduct', async (req, res) => {
         }
     });
 
+//Search functionality by UPC, StoreNo ,category
+
+    router.get('/search/:key', async(req, res) => {
+        try {
+            const product = await Product.find({
+               "$or":[
+                {UPC:{$regex:req.params.key}},  
+                {storeNo:{$regex:req.params.key}},
+                {category:{$regex:req.params.key}}
+               ]
+            })
+
+            var data =product.filter(x=> x.isActive == true)
+            res.status(200).json({
+                TotalProducts:data.length,
+                filtereddata:data
+            })
+ 
+          /*  var data =product.filter(x=> x.isActive == false)
+             res.status(401).json({
+             message: "Product is not Active"
+            })*/
+        
+        } catch (error) {
+            res.status(401).json({
+                message: "Product not found",
+                error
+            })
+        }
+    });
+
+
+//Get the product by id
 
     router.get('/product/:id', async(req, res) => {
         try{
             const product = await Product.findOne({_id: req.params.id})
+           // console.log(product.Name)
             if(!product) {
                 res.status(404).send({error: "Product not found"})
             }
@@ -43,6 +86,7 @@ router.post('/postProduct', async (req, res) => {
         }
     })
 
+    //Get the product by UPC
    
     router.get('/productByUPC/:UPC',async(req,res)=>{
         try{
@@ -57,8 +101,9 @@ router.post('/postProduct', async (req, res) => {
         }
     })
 
+    //Get the product by StoreNO
 
-    router.get('/productByStoreNo/:storeNo',async(req,res)=>{
+    router.get('/productsByStoreNo/:storeNo',async(req,res)=>{
         try{
             const product= await Product.find({storeNo:req.params.storeNo})
             if(!product){
@@ -73,6 +118,8 @@ router.post('/postProduct', async (req, res) => {
         }
     })
 
+    //Delete the product by id
+
     router.delete('/product/:id', async(req, res) => {
         try {
             const deletedProduct = await Product.findOneAndDelete( {_id: req.params.id} )
@@ -85,6 +132,8 @@ router.post('/postProduct', async (req, res) => {
             res.status(400).json(error)
         }
     })
+
+    //Delete the product by UPC
 
     router.delete('/product/:UPC', async(req, res) => {
         try {
@@ -99,9 +148,11 @@ router.post('/postProduct', async (req, res) => {
         }
     })
 
+    //Update the product Data by id
+
     router.put('/productData/:_id' , async (req,res) => {
         const productid = req.params._id
-        const allowedUpdates = ['Name','description','category','price','UPC','storeNo']
+        const allowedUpdates = ['Name','productId','description','category','categoryId','price','UPC','storeNo','shelfNo']
         const updates = Object.keys(req.body)
         const updatesOps = {}
     

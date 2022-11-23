@@ -7,11 +7,19 @@ const ProductSchema = new mongoose.Schema({
         type:String,
         required:true
     },
+    productId:{
+        type:String,
+        required:true
+    },
     description:{
         type:String,
         required:true
     },
     category:{
+        type:String,
+        required:true
+    },
+    categoryId:{
         type:String,
         required:true
     },
@@ -26,6 +34,14 @@ const ProductSchema = new mongoose.Schema({
     },
     storeNo:{
         type:String,
+        required:true
+    },
+    shelfNO:{
+        type:String,
+        required:true
+    },
+    isActive:{
+        type:Boolean,
         required:true
     }
 
