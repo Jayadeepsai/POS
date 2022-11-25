@@ -1,3 +1,4 @@
+const e = require('express');
 const express = require('express');
 const Product = require('../Models/product')
 
@@ -152,7 +153,7 @@ router.post('/postProduct', async (req, res) => {
 
     router.put('/productData/:_id' , async (req,res) => {
         const productid = req.params._id
-        const allowedUpdates = ['Name','productId','description','category','categoryId','price','UPC','storeNo','shelfNo']
+        const allowedUpdates = ['Name','productId','description','category','categoryId','price','UPC','storeNo','shelfNo','isActive']
         const updates = Object.keys(req.body)
         const updatesOps = {}
     
@@ -177,4 +178,19 @@ router.post('/postProduct', async (req, res) => {
       } 
     })
 
+    //Sorting by price high to low
+
+    router.get('/productByPrice',async(req,res)=>{
+        try{
+            const product= await Product.find().sort({price:-1}) //using sort in find function 
+            if(!product){
+                res.status(404).send({error: "No Products Available"})
+            }
+            res.status(400).json({product})
+        }catch(error){
+            res.status(401).json({error})
+            console.log(error)
+        }
+    })
+    
     module.exports=router
