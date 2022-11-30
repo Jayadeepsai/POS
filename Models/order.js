@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose')    // requiring all the modules
 const Product = require('../Models/product')
 const ObjectID = mongoose.Schema.Types.ObjectId
 //subschema
@@ -31,8 +31,7 @@ const orderSchema = new mongoose.Schema({
     },
     EmployeeId:{
         type:String,
-        required:true,
-        unique:true
+        required:true
     },
     PaymentType:{
         type:String,
@@ -46,8 +45,28 @@ const orderSchema = new mongoose.Schema({
         type:String,
         required:true
     },
+    TotalItems:{
+        type:String,
+        required:true
+    },
+    OrderTotal:{
+        type:String,
+        required:true
+    },
+    OrderStatus:{
+        type:String,
+        required:true
+    },
+    StoreAddress:{
+        type:String,
+        required:true
+    },
+    StorePhoneNumber:{
+        type:Number,
+        required:true
+    },
 
-    OrderItems:[itemSchema]
+    OrderItems:[itemSchema] //using array in this 
 
 })
 
